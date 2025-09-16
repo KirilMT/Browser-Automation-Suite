@@ -4,6 +4,8 @@ Copy this file to config.py and modify it for your specific application requirem
 config.py is ignored by Git, so your settings will remain local.
 """
 
+import os
+
 # Example configuration dictionary.
 # This dictionary is loaded by AutomationConfig in main.py.
 LOCAL_APP_CONFIG = {
@@ -14,7 +16,7 @@ LOCAL_APP_CONFIG = {
         "window_x_offset": 0
     },
     "webdriver": {
-        "chrome_driver_path": "src/chromedriver.exe",
+        "chrome_driver_path": os.path.join(os.path.dirname(__file__), "chromedriver.exe"),
         "headless_mode": False,
         "default_timeout": 10
     },
@@ -30,4 +32,3 @@ LOCAL_APP_CONFIG = {
         ]
     }
 }
-

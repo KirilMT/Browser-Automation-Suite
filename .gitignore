@@ -36,3 +36,4 @@ config.py
 app_handlers.py
 *.local
 
+.idea/
