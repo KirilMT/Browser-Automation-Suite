@@ -10,6 +10,7 @@ A modular, reusable automation system built with Python and Selenium WebDriver. 
 - **Thread-Safe**: Multi-threaded design for concurrent browser operations
 - **Error Handling**: Comprehensive error handling and graceful shutdown mechanisms
 - **Process Management**: Automatic cleanup of browser processes
+- **Automated EXE Build**: Batch and PowerShell scripts for packaging your automation as a standalone executable
 
 ## Project Structure
 
@@ -24,6 +25,10 @@ src/
 └── chromedriver.exe       # Chrome WebDriver executable
 requirements.txt           # Python dependencies
 README.md                  # This documentation
+main.spec                  # PyInstaller spec file (ignored by git)
+build_exe.bat              # Batch script for building EXE
+build_exe.ps1              # PowerShell script for building EXE
+.gitignore                 # Git ignore rules
 ```
 
 ## Installation
@@ -31,13 +36,12 @@ README.md                  # This documentation
 1. **Prerequisites**:
    - Python 3.7+
    - Chrome browser
-   - ChromeDriver (included in project)
+   - ChromeDriver (included in project, must match your Chrome version)
 
 2. **Python Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
-   
    Or install manually:
    ```bash
    pip install selenium psutil pyautogui
@@ -48,6 +52,30 @@ README.md                  # This documentation
    - Navigate to the project directory
    - Ensure `chromedriver.exe` is in the `src/` directory
    - Modify configuration in `src/main.py` or create a custom config.
+
+## Building the Executable
+
+You can automate EXE creation using either the batch or PowerShell script:
+
+- **Batch (Windows CMD):**
+  ```cmd
+  build_exe.bat
+  ```
+- **PowerShell:**
+  ```powershell
+  .\build_exe.ps1
+  ```
+  > PowerShell script is recommended for better process cleanup and compatibility.
+
+**Note:**
+- Both scripts bundle `chromedriver.exe` using PyInstaller's `--add-data` option.
+- The code automatically resolves the path to `chromedriver.exe` for both development and packaged execution.
+- If you see a ChromeDriver version mismatch error, update `chromedriver.exe` in `src/` to match your installed Chrome version (see Troubleshooting).
+
+## .gitignore
+
+- All PyInstaller spec files are ignored using `*.spec`.
+- Build artifacts and local configuration files are also ignored.
 
 ## Quick Start
 
@@ -140,6 +168,22 @@ config.webdriver.headless_mode = True  # Run without GUI
 config.webdriver.default_timeout = 15
 ```
 
+### Test Server Configuration
+
+You can control the test server's host and port via your config files (`config.py` or `example_config.py`):
+
+```python
+LOCAL_APP_CONFIG = {
+    # ...existing config...
+    "test_env_host": "localhost",  # Host for test server
+    "test_env_port": 8000,          # Port for test server
+}
+```
+
+- When `filters.enabled` is set to `False`, the test server will be launched automatically at the specified host and port.
+- If these options are missing, defaults (`localhost:8000`) will be used.
+- Warnings will be printed if any required config section is missing, and sensible defaults will be set automatically.
+
 ## Architecture Overview
 
 ### Core Components
@@ -227,18 +271,14 @@ The system includes comprehensive error handling:
 
 ## Troubleshooting
 
-### Common Issues
+### ChromeDriver Version Mismatch
+- Download the correct ChromeDriver for your Chrome browser from [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/).
+- Replace `src/chromedriver.exe` with the new version.
+- Rebuild your executable using the provided script.
 
-1. **ChromeDriver Version Mismatch**:
-   - Download a compatible ChromeDriver version for your Chrome browser.
-   - Replace `chromedriver.exe` in the `src/` directory.
-   - Update `webdriver.chrome_driver_path` in the configuration if needed.
-
-2. **Element Not Found Errors**:
-   - Verify that CSS selectors are correct for your target system.
-   - Increase timeout values in the configuration.
-   - Check if the page structure has changed.
-   - Use browser developer tools to inspect elements.
+### EXE Build Issues
+- Ensure no previous `main.exe` process is running before building (run scripts as administrator if needed).
+- If you see `Access is denied` or `file is in use`, terminate all related processes and retry.
 
 3. **Window Layout Issues**:
    - Adjust window configuration parameters in `WindowConfig`
@@ -272,6 +312,13 @@ python -c "from config import AutomationConfig; print('Configuration loaded succ
 python -c "from automation_system import AutomationSystem; print('Main system loaded successfully')"
 ```
 
+## PyInstaller Packaging Notes
+
+- `chromedriver.exe` is bundled using `--add-data`.
+- The code uses `sys._MEIPASS` to resolve the driver path when running as an executable.
+- No manual path configuration is needed in your config.
+- Update `chromedriver.exe` whenever Chrome updates to avoid compatibility errors.
+
 ## Security Considerations
 
 - Store sensitive URLs and credentials in environment variables.
@@ -304,6 +351,55 @@ python -c "from automation_system import AutomationSystem; print('Main system lo
    - Extend page handlers for new functionality.
    - Add new configuration sections as needed.
    - Test thoroughly with your target system.
+
+## Test Environment
+
+A set of dummy HTML pages is provided in `src/test_env/pages/` for local testing and development:
+
+- `index.html`: Main entry page with navigation links and a button.
+- `page1.html`: Contains a button and a link back to index.
+- `page2.html`: Contains a simple form and a link back to index.
+
+### Launching the Local Test Server
+
+To serve these pages for browser and Selenium testing, use the provided Python server:
+
+```bash
+cd src/test_env
+python serve_test_env.py
+```
+
+- By default, the server runs at [http://localhost:8000/](http://localhost:8000/).
+- Access your test pages at:
+  - http://localhost:8000/index.html
+  - http://localhost:8000/page1.html
+  - http://localhost:8000/page2.html
+- You can change the port with `--port`, e.g. `python serve_test_env.py --port 8080`
+
+**Usage:**
+- Open these pages in your browser for manual testing.
+- Use Selenium automation scripts to interact with buttons, links, and forms for development and debugging.
+- Update or extend these pages as needed for more complex test scenarios.
+
+Example (Python Selenium):
+```python
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+# Point to local test page served by the test server
+driver = webdriver.Chrome()
+driver.get('http://localhost:8000/index.html')
+
+# Interact with elements
+index_btn = driver.find_element(By.ID, 'index-btn')
+index_btn.click()
+
+link_page1 = driver.find_element(By.ID, 'link-page1')
+link_page1.click()
+
+# ... continue with your tests ...
+driver.quit()
+```
 
 ## License
 

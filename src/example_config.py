@@ -30,5 +30,7 @@ LOCAL_APP_CONFIG = {
         "selectors": [
             # Example selector: "#app > div > ul > li:nth-child(1)"
         ]
-    }
+    },
+    "test_env_host": "localhost",
+    "test_env_port": 8000
 }

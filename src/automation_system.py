@@ -42,9 +42,12 @@ class AutomationSystem:
 
             self.driver_managers = [page1_driver, page2_driver]
 
-            # Create page handlers
-            page1_handler = Page1Handler(page1_driver, self.config)
-            page2_handler = Page2Handler(page2_driver, self.config)
+            # Determine test mode
+            test_mode = hasattr(self.config, 'filters') and hasattr(self.config.filters, 'enabled') and not self.config.filters.enabled
+
+            # Create page handlers with test_mode flag
+            page1_handler = Page1Handler(page1_driver, self.config, test_mode=test_mode)
+            page2_handler = Page2Handler(page2_driver, self.config, test_mode=test_mode)
 
             # Start automation threads
             self._start_automation_threads(page1_handler, page2_handler)

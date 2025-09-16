@@ -37,3 +37,4 @@ app_handlers.py
 *.local
 
 .idea/
+*.spec

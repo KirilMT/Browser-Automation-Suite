@@ -37,10 +37,16 @@ class WebDriverManager:
             else:
                 # Running in development
                 base_path = os.path.dirname(__file__)
-            chromedriver_path = os.path.join(base_path, 'src', 'chromedriver.exe')
-            if not os.path.exists(chromedriver_path):
-                raise FileNotFoundError(f"chromedriver.exe not found at {chromedriver_path}")
-            return chromedriver_path
+            # Try both possible locations
+            possible_paths = [
+                os.path.join(base_path, 'chromedriver.exe'),
+                os.path.join(base_path, 'src', 'chromedriver.exe')
+            ]
+            for chromedriver_path in possible_paths:
+                if os.path.exists(chromedriver_path):
+                    print(f"[DEBUG] Resolved chromedriver.exe path: {chromedriver_path}")
+                    return chromedriver_path
+            raise FileNotFoundError(f"chromedriver.exe not found in any expected location: {possible_paths}")
         except Exception as e:
             print(f"Error resolving chromedriver path: {e}")
             raise
