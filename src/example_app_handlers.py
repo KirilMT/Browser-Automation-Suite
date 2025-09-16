@@ -7,6 +7,8 @@ logic for your application. `app_handlers.py` is ignored by Git.
 from selenium.webdriver.common.by import By
 from browser_automation import WebDriverManager
 from config_models import AutomationConfig
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class BasePageHandler:
@@ -85,3 +87,67 @@ class Page2Handler(BasePageHandler):
         #     self.config.window.app_window_height
         # )
         print("Example: Setting up Page 2 window layout (not implemented).")
+
+
+def page1_logic(driver, config):
+    """Handles the automation logic for the first page."""
+    full_url = f"{config.urls.base_url}{config.urls.page1_path}"
+    driver.get(full_url)
+    print(f"Navigated to: {driver.title}")
+
+    if not config.filters.enabled:
+        print("Test environment detected. Skipping production UI interactions for page 1.")
+        try:
+            WebDriverWait(driver, config.webdriver.default_timeout).until(
+                EC.presence_of_element_located((By.TAG_NAME, "h1"))
+            )
+            print("Test page for 'Page 1' loaded successfully.")
+        except Exception as e:
+            print(f"Could not verify test page for page 1: {e}")
+        return
+
+    # --- Production Logic ---
+    # Example: Close a menu, apply filters, etc.
+    # Replace with your actual production automation steps.
+    print("Running production logic for page 1...")
+    # try:
+    #     wait_until_element_loaded(driver, By.ID, "menu", timeout=30).click()
+    #     print("Menu closed.")
+    # except Exception as e:
+    #     print(f"Could not close menu: {e}")
+    #
+    # # Example of further interactions
+    # print("Page 1 automation complete.")
+
+
+def page2_logic(driver, config):
+    """Handles the automation logic for the second page."""
+    full_url = f"{config.urls.base_url}{config.urls.page2_path}"
+    driver.get(full_url)
+    print(f"Navigated to: {driver.title}")
+
+    if not config.filters.enabled:
+        print("Test environment detected. Skipping production UI interactions for page 2.")
+        try:
+            WebDriverWait(driver, config.webdriver.default_timeout).until(
+                EC.presence_of_element_located((By.TAG_NAME, "h1"))
+            )
+            print("Test page for 'Page 2' loaded successfully.")
+        except Exception as e:
+            print(f"Could not verify test page for page 2: {e}")
+        return
+
+    # --- Production Logic ---
+    # Example: Set window size and position.
+    # Replace with your actual production automation steps.
+    print("Running production logic for page 2...")
+    # try:
+    #     import pyautogui
+    #     screen_width, _ = pyautogui.size()
+    #     driver.set_window_position(0, 0)
+    #     driver.set_window_size(screen_width, 1080)
+    #     print("Window for page 2 resized.")
+    # except Exception as e:
+    #     print(f"Could not set window size for page 2: {e}")
+    #
+    # print("Page 2 automation complete.")
