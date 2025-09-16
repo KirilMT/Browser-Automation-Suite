@@ -2,7 +2,9 @@
 Browser automation utilities.
 Handles Chrome WebDriver initialization and common web interactions.
 """
+import os
 import subprocess
+import sys
 import time
 import psutil
 from typing import Optional, Tuple
@@ -12,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.service import Service
 
 from config_models import WebDriverConfig
 
@@ -23,6 +26,24 @@ class WebDriverManager:
         self.config = config
         self.driver: Optional[webdriver.Chrome] = None
         self.service_process: Optional[subprocess.Popen] = None
+        self.chrome_driver_path = self._resolve_chromedriver_path()
+
+    def _resolve_chromedriver_path(self) -> str:
+        """Resolves the path to chromedriver.exe for both development and PyInstaller builds."""
+        try:
+            if getattr(sys, 'frozen', False):
+                # Running as a PyInstaller bundle
+                base_path = sys._MEIPASS
+            else:
+                # Running in development
+                base_path = os.path.dirname(__file__)
+            chromedriver_path = os.path.join(base_path, 'src', 'chromedriver.exe')
+            if not os.path.exists(chromedriver_path):
+                raise FileNotFoundError(f"chromedriver.exe not found at {chromedriver_path}")
+            return chromedriver_path
+        except Exception as e:
+            print(f"Error resolving chromedriver path: {e}")
+            raise
 
     def start_driver(self) -> Tuple[webdriver.Chrome, subprocess.Popen]:
         """Start Chrome WebDriver with configured options."""
@@ -38,20 +59,22 @@ class WebDriverManager:
 
             # Start ChromeDriver service
             self.service_process = subprocess.Popen(
-                [self.config.chrome_driver_path],
+                [self.chrome_driver_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 creationflags=subprocess.CREATE_NO_WINDOW,
                 startupinfo=startup_info
             )
 
-            # Initialize WebDriver
-            self.driver = webdriver.Chrome(options=chrome_options)
+            # Initialize WebDriver (Selenium 4.6+ recommended way)
+            service = Service(self.chrome_driver_path)
+            self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
             return self.driver, self.service_process
 
         except Exception as e:
-            raise RuntimeError(f"Failed to start Chrome WebDriver: {e}")
+            print(f"Failed to start Chrome WebDriver: {e}")
+            raise
 
     def wait_for_element(self, by: By, value: str, timeout: int = None) -> Optional[any]:
         """Wait for element to be present and return it."""
@@ -61,8 +84,10 @@ class WebDriverManager:
         timeout = timeout or self.config.default_timeout
 
         try:
+            # Ensure 'by' is a string if needed
+            locator = (by.value if hasattr(by, 'value') else by, value)
             element = WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located((by, value))
+                EC.presence_of_element_located(locator)
             )
             return element
         except TimeoutException:

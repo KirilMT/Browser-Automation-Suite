@@ -34,6 +34,7 @@ def main():
         print(f"An error occurred: {e}")
     finally:
         automation_system.cleanup()
+    input("Press Enter to exit...")
 
 if __name__ == "__main__":
     main()
