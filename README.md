@@ -2,10 +2,6 @@
 
 A modular, reusable automation system built with Python and Selenium WebDriver. This system provides automated browser-based monitoring and interaction for web applications.
 
-## 🖼️ Screenshots
-
-*(Placeholder for screenshots of the application in action. You can add images of the browser automation, configuration files, or console output.)*
-
 ## ✨ Features
 
 - **Modular Architecture**: Clean separation of concerns with dedicated modules for configuration, browser automation, and application-specific handlers.
