@@ -24,8 +24,8 @@ This is a modular, reusable automation system built with Python and Selenium Web
 - **Thread-Safe**: Multi-threaded design for concurrent browser operations.
 - **Error Handling**: Comprehensive error handling and graceful shutdown mechanisms.
 - **Process Management**: Automatic cleanup of browser processes.
-- **Automated Driver Management**: Uses `webdriver-manager` to automatically download and manage the correct ChromeDriver.
-- **Automated EXE Build**: Batch and PowerShell scripts for packaging your automation as a standalone executable.
+- **Hybrid Driver Management**: Uses `webdriver-manager` for easy development and a bundled driver for the standalone executable.
+- **Automated EXE Build**: A robust PowerShell script handles the entire process of packaging the application into a standalone executable.
 
 ## Technologies
 
@@ -47,12 +47,10 @@ Browser-Automation-Suite/
 │   └── logger_config.py       # Logging setup
 ├── tests/
 │   ├── pages/                 # Dummy HTML pages for local testing
-│   ├── serve_test_env.py      # Simple HTTP server for the test environment
-│   └── server_manager.py      # Manages the test server subprocess
+│   └── server_manager.py      # Manages the in-process, threaded test server
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
-├── build_exe.bat              # Batch script for building EXE
-├── build_exe.ps1              # PowerShell script for building EXE
+├── build_exe.ps1              # PowerShell script for building the executable
 └── .gitignore                 # Git ignore rules
 ```
 

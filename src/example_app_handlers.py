@@ -1,8 +1,8 @@
 """
 Example application-specific page automation handlers.
-This file serves as a template for creating your own `app_handlers.py.bak`.
-Copy this file to `app_handlers.py.bak` and implement the specific automation
-logic for your application. `app_handlers.py.bak` is ignored by Git.
+This file serves as a template for creating your own `app_handlers.py`.
+Copy this file to `app_handlers.py` and implement the specific automation
+logic for your application. `app_handlers.py` is ignored by Git.
 """
 import logging
 from selenium.webdriver.common.by import By

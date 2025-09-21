@@ -14,7 +14,7 @@ from browser_automation import WebDriverManager, ProcessManager
 # Try to load local handlers, fall back to example handlers
 try:
     from app_handlers import Page1Handler, Page2Handler
-    logging.info("Loaded local handlers from app_handlers.py.bak.")
+    logging.info("Loaded local handlers from app_handlers.py.")
 except ImportError:
     logging.info("No local handlers found. Loading from example_app_handlers.py.")
     from example_app_handlers import Page1Handler, Page2Handler

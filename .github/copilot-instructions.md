@@ -22,7 +22,7 @@ The framework is designed with a clear separation of concerns:
 -   **`src/browser_automation.py`**: Contains the `WebDriverManager` class, which handles all direct Selenium calls.
 -   **`src/example_app_handlers.py`**: Home to the `BasePageHandler` and its implementations (`Page1Handler`, `Page2Handler`). This is where application-specific automation logic resides.
 -   **`src/main.py`**: The entry point for running the automation.
--   **`build_exe.ps1` / `build_exe.bat`**: Scripts for packaging the application into a standalone executable.
+-   **`build_exe.ps1`**: The primary script for packaging the application into a standalone executable.
 
 ## Development Guidelines
 
@@ -56,12 +56,10 @@ Browser-Automation-Suite/
 │   └── logger_config.py       # Logging setup
 ├── tests/
 │   ├── pages/                 # Dummy HTML pages for local testing
-│   ├── serve_test_env.py      # Simple HTTP server for the test environment
-│   └── server_manager.py      # Manages the test server subprocess
+│   └── server_manager.py      # Manages the in-process, threaded test server
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
-├── build_exe.bat              # Batch script for building EXE
-├── build_exe.ps1              # PowerShell script for building EXE
+├── build_exe.ps1              # PowerShell script for building the executable
 └── .gitignore                 # Git ignore rules
 ```
 
@@ -72,20 +70,20 @@ Browser-Automation-Suite/
 - **Configurable**: Highly customizable through configuration files.
 - **Thread-Safe**: Designed for concurrent operations.
 - **Error Handling**: Graceful shutdown and error recovery.
-- **Automated Driver Management**: Uses `webdriver-manager` to automatically download and manage the correct ChromeDriver.
-- **Automated EXE Build**: Scripts to package the project.
+- **Hybrid Driver Management**: Uses `webdriver-manager` for development and a bundled driver for the executable.
+- **Automated EXE Build**: A robust PowerShell script to package the project.
 
 ## Technologies
 
 - **Programming Language:** Python
-- **Libraries:** Selenium WebDriver, psutil, pyautogui, webdriver-manager
+- **Libraries:** Selenium WebDriver, psutil, webdriver-manager
 - **Dependencies:** As listed in `requirements.txt`.
 
 ## Quick Test Guide
 
 1.  From the project root, run the main entry point: `python -m src.main`.
 2.  The system will launch browser windows and perform automation tasks as defined in the configuration.
-3.  To test the executable build, run `build_exe.ps1` (PowerShell) or `build_exe.bat` (CMD).
+3.  To test the executable build, run `build_exe.ps1` in a PowerShell terminal.
 
 ## GitHub Issues
 

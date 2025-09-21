@@ -1,7 +1,7 @@
 """
 Example configuration file for the automation system.
-Copy this file to config.py.bak and modify it for your specific application requirements.
-config.py.bak is ignored by Git, so your settings will remain local.
+Copy this file to config.py and modify it for your specific application requirements.
+config.py is ignored by Git, so your settings will remain local.
 """
 
 import os
