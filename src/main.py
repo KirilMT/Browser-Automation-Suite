@@ -49,14 +49,19 @@ def main():
         logging.info("Initializing automation system...")
         automation_system.start_automation()
 
-        logging.info("Automation system is running. Close browser windows to exit.")
+        # Re-apply logging configuration to override selenium's settings
+        setup_logging()
+
+        logging.info("Automation system is running. Press Ctrl+C to exit.")
         automation_system.wait_for_completion()
 
-    except KeyboardInterrupt:
-        logging.info("Received interrupt signal. Shutting down gracefully...")
     except Exception as e:
         logging.error(f"An error occurred: {e}", exc_info=True)
     finally:
+        logging.info("Shutting down...")
         automation_system.cleanup()
         if test_env_server:
             test_env_server.stop()
+
+if __name__ == "__main__":
+    main()

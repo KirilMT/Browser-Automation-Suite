@@ -10,6 +10,7 @@ import time
 import psutil
 from typing import Optional, Tuple
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,10 +28,9 @@ class WebDriverManager:
     def __init__(self, config: WebDriverConfig):
         self.config = config
         self.driver: Optional[webdriver.Chrome] = None
-        self.service_process: Optional[subprocess.Popen] = None
         self.chrome_driver_path = get_chromedriver_path()
 
-    def start_driver(self) -> Tuple[webdriver.Chrome, subprocess.Popen]:
+    def start_driver(self):
         """Start Chrome WebDriver with configured options."""
         try:
             chrome_options = webdriver.ChromeOptions()
@@ -38,24 +38,13 @@ class WebDriverManager:
             if self.config.headless_mode:
                 chrome_options.add_argument("--headless")
 
-            # Setup startup info for Windows
-            startup_info = subprocess.STARTUPINFO()
-            startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-            # Start ChromeDriver service
-            self.service_process = subprocess.Popen(
-                [self.chrome_driver_path],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-                startupinfo=startup_info
+            # The Service object will manage the ChromeDriver process
+            service = Service(
+                self.chrome_driver_path,
+                log_output=subprocess.PIPE  # Redirect logs to a pipe
             )
 
-            # Initialize WebDriver (Selenium 4.6+ recommended way)
-            service = Service(self.chrome_driver_path)
             self.driver = webdriver.Chrome(service=service, options=chrome_options)
-
-            return self.driver, self.service_process
 
         except (FileNotFoundError, WebDriverException) as e:
             logging.error(f"Failed to start Chrome WebDriver: {e}", exc_info=True)
@@ -142,12 +131,6 @@ class WebDriverManager:
                 self.driver.quit()
             except Exception as e:
                 logging.error(f"Error occurred while closing browser: {e}", exc_info=True)
-
-        if self.service_process:
-            try:
-                self.service_process.terminate()
-            except Exception as e:
-                logging.error(f"Error terminating ChromeDriver process: {e}", exc_info=True)
 
 
 class ProcessManager:

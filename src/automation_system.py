@@ -5,6 +5,7 @@ Orchestrates multiple browser instances for web automation.
 """
 import logging
 import threading
+import time
 from typing import Dict, List, Optional
 
 from config_models import AutomationConfig
@@ -26,8 +27,8 @@ class AutomationSystem:
         self.config = config or AutomationConfig()
         self.driver_managers: List[WebDriverManager] = []
         self.threads: List[threading.Thread] = []
-        self.monitor_threads: List[threading.Thread] = []
         self.is_running = False
+        self.shutdown_event = threading.Event()
 
     def start_automation(self):
         """Start the complete automation system."""
@@ -53,9 +54,6 @@ class AutomationSystem:
 
             # Start automation threads
             self._start_automation_threads(page1_handler, page2_handler)
-
-            # Start monitoring threads
-            self._start_monitoring_threads()
 
             self.is_running = True
             logging.info("Automation system started successfully")
@@ -88,62 +86,48 @@ class AutomationSystem:
         for thread in self.threads:
             thread.start()
 
-    def _start_monitoring_threads(self):
-        """Start browser monitoring threads."""
-        for i, driver_manager in enumerate(self.driver_managers):
-            monitor_thread = threading.Thread(
-                target=ProcessManager.monitor_browser_close,
-                args=(driver_manager,),
-                name=f"BrowserMonitor-{i+1}"
-            )
-            self.monitor_threads.append(monitor_thread)
-            monitor_thread.start()
-
     def _run_page1_automation(self, handler: Page1Handler):
         """Run page 1 automation logic."""
         try:
             logging.info("Starting page 1 automation...")
             handler.navigate_and_setup()
-
-            # TODO: Add any continuous monitoring logic here
-            # For now, just keep the page open
+            self.shutdown_event.wait()  # Keep the page open until shutdown is signaled
 
         except Exception as e:
-            logging.error(f"Error in page 1 automation: {e}", exc_info=True)
+            if not self.shutdown_event.is_set():
+                logging.error(f"Error in page 1 automation: {e}", exc_info=True)
 
     def _run_page2_automation(self, handler: Page2Handler):
         """Run page 2 automation logic."""
         try:
             logging.info("Starting page 2 automation...")
             handler.navigate_and_setup()
-
-            # TODO: Add any continuous monitoring logic here
-            # For now, just keep the page open
+            self.shutdown_event.wait()  # Keep the page open until shutdown is signaled
 
         except Exception as e:
-            logging.error(f"Error in page 2 automation: {e}", exc_info=True)
+            if not self.shutdown_event.is_set():
+                logging.error(f"Error in page 2 automation: {e}", exc_info=True)
 
     def wait_for_completion(self):
         """Wait for all automation threads to complete."""
-        if not self.is_running:
-            logging.warning("Automation system is not running")
-            return
-
         try:
-            # Wait for monitoring threads to complete
-            for monitor_thread in self.monitor_threads:
-                monitor_thread.join()
-
-            logging.info("All browser windows have been closed")
-
+            while self.is_running:
+                time.sleep(1)  # Just wait until cleanup is called
         except KeyboardInterrupt:
             logging.info("Received keyboard interrupt, shutting down...")
-        finally:
-            self.cleanup()
+            # The cleanup is handled by the finally block in main.py
 
     def cleanup(self):
         """Clean up resources and terminate processes."""
+        if not self.is_running:
+            return
+
         logging.info("Cleaning up automation system...")
+        self.shutdown_event.set()
+
+        # Wait for automation threads to finish
+        for thread in self.threads:
+            thread.join()
 
         # Quit all drivers
         for driver_manager in self.driver_managers:
@@ -161,7 +145,6 @@ class AutomationSystem:
             'is_running': self.is_running,
             'active_drivers': len([dm for dm in self.driver_managers if dm.driver]),
             'active_threads': len([t for t in self.threads if t.is_alive()]),
-            'active_monitors': len([t for t in self.monitor_threads if t.is_alive()])
         }
 
 
