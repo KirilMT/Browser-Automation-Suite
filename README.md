@@ -14,6 +14,7 @@ A modular, reusable automation system built with Python and Selenium WebDriver. 
 - **Thread-Safe**: Multi-threaded design for concurrent browser operations.
 - **Error Handling**: Comprehensive error handling and graceful shutdown mechanisms.
 - **Process Management**: Automatic cleanup of browser processes.
+- **Automated Driver Management**: Uses `webdriver-manager` to automatically download and manage the correct ChromeDriver.
 - **Automated EXE Build**: Batch and PowerShell scripts for packaging your automation as a standalone executable.
 
 ## 📁 Project Structure
@@ -21,16 +22,19 @@ A modular, reusable automation system built with Python and Selenium WebDriver. 
 ```
 Browser-Automation-Suite/
 ├── src/
-│   ├── config.py              # Configuration management classes
+│   ├── config_models.py       # Configuration management classes
 │   ├── browser_automation.py  # WebDriver and browser automation utilities
-│   ├── app_handlers.py        # Application-specific page interaction handlers
+│   ├── example_app_handlers.py # Application-specific page interaction handlers
 │   ├── automation_system.py   # Main orchestration system
 │   ├── main.py                # Entry point script
 │   ├── example_config.py      # Example configuration templates
-│   └── chromedriver.exe       # Chrome WebDriver executable
+│   └── logger_config.py       # Logging setup
+├── tests/
+│   ├── pages/                 # Dummy HTML pages for local testing
+│   ├── serve_test_env.py      # Simple HTTP server for the test environment
+│   └── server_manager.py      # Manages the test server subprocess
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
-├── main.spec                  # PyInstaller spec file (ignored by git)
 ├── build_exe.bat              # Batch script for building EXE
 ├── build_exe.ps1              # PowerShell script for building EXE
 └── .gitignore                 # Git ignore rules
@@ -42,7 +46,6 @@ Browser-Automation-Suite/
 
 - Python 3.7+
 - Chrome browser
-- ChromeDriver (included in project, must match your Chrome version)
 
 ### Installation Steps
 
@@ -76,23 +79,18 @@ Browser-Automation-Suite/
    ```bash
    pip install -r requirements.txt
    ```
-   Or install manually:
-   ```bash
-   pip install selenium psutil pyautogui
-   ```
+   This will install Selenium, `webdriver-manager`, and other necessary libraries.
 
 4. **Setup:**
-   - Ensure `chromedriver.exe` is in the `src/` directory.
    - Modify configuration in `src/main.py` or create a custom config based on `src/example_config.py`.
 
 ## 🚀 Quick Start
 
 ### Using the Entry Point Script
 
-Simply run the main script:
+Simply run the main script from the project root:
 ```bash
-cd src
-python main.py
+python -m src.main
 ```
 
 ### Basic Usage Example
@@ -127,7 +125,7 @@ finally:
 
 ## 🔧 Configuration
 
-The system uses a hierarchical configuration structure defined in `src/config.py`.
+The system uses a hierarchical configuration structure defined in `src/config_models.py`.
 
 ### Core Configuration Classes
 - **WindowConfig**: Window positioning and sizing.
@@ -142,7 +140,7 @@ You can customize parameters by creating an `AutomationConfig` object or loading
 ```python
 # configuration_example.py
 # noinspection PyUnresolvedReferences
-from config import AutomationConfig
+from config_models import AutomationConfig
 
 config = AutomationConfig()
 
@@ -185,20 +183,16 @@ You can automate EXE creation using either the batch or PowerShell script:
   ```
   > PowerShell script is recommended for better process cleanup and compatibility.
 
-**Note:**
-- Both scripts bundle `chromedriver.exe` using PyInstaller's `--add-data` option.
-- The code automatically resolves the path to `chromedriver.exe` for both development and packaged execution.
-
 ## 🧪 Test Environment
 
-A set of dummy HTML pages is provided in `src/test_env/pages/` for local testing.
+A set of dummy HTML pages is provided in `tests/pages/` for local testing.
 
 ### Launching the Local Test Server
 
 To serve these pages for browser and Selenium testing:
 
 ```bash
-cd src/test_env
+cd tests
 python serve_test_env.py
 ```
 - By default, the server runs at `http://localhost:8000/`.
@@ -210,7 +204,7 @@ python serve_test_env.py
 
 1. **AutomationSystem**: Main orchestrator that manages multiple browser instances.
 2. **WebDriverManager**: Handles Chrome WebDriver lifecycle and interactions.
-3. **Page Handlers** (`app_handlers.py`): Manages interactions on specific pages.
+3. **Page Handlers** (`example_app_handlers.py`): Manages interactions on specific pages.
 4. **ProcessManager**: Handles browser process cleanup.
 
 ### Key Design Principles
@@ -224,21 +218,16 @@ python serve_test_env.py
 
 ### Common Issues
 
-1. **ChromeDriver Version Mismatch**:
-   - Download the correct ChromeDriver for your Chrome browser from [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/).
-   - Replace `src/chromedriver.exe` with the new version.
-   - Rebuild your executable.
-
-2. **EXE Build Issues**:
+1. **EXE Build Issues**:
    - Ensure no previous `.exe` process is running before building.
    - If you see `Access is denied`, terminate all related processes and retry.
 
-3. **Window Layout Issues**:
+2. **Window Layout Issues**:
    - Adjust window configuration parameters in `WindowConfig`.
    - Verify screen resolution compatibility.
 
-4. **Import Errors**:
-   - Ensure you're running scripts from the `src/` directory.
+3. **Import Errors**:
+   - Ensure you're running scripts from the project root (e.g., `python -m src.main`).
    - Install all dependencies: `pip install -r requirements.txt`.
 
 ### Debugging

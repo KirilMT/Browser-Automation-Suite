@@ -17,9 +17,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 from config_models import WebDriverConfig
-from utils import get_chromedriver_path
 
 
 class WebDriverManager:
@@ -28,7 +28,6 @@ class WebDriverManager:
     def __init__(self, config: WebDriverConfig):
         self.config = config
         self.driver: Optional[webdriver.Chrome] = None
-        self.chrome_driver_path = get_chromedriver_path()
 
     def start_driver(self):
         """Start Chrome WebDriver with configured options."""
@@ -40,7 +39,7 @@ class WebDriverManager:
 
             # The Service object will manage the ChromeDriver process
             service = Service(
-                self.chrome_driver_path,
+                ChromeDriverManager().install(),
                 log_output=subprocess.PIPE  # Redirect logs to a pipe
             )
 

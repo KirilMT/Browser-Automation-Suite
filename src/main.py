@@ -38,7 +38,7 @@ def main():
     test_env_server = None
     if hasattr(config, 'filters') and hasattr(config.filters, 'enabled') and config.filters.enabled is False:
         logging.info(f"Test environment detected: launching local test server at {test_env_host}:{test_env_port} ...")
-        from test_env.server_manager import TestEnvServerManager
+        from tests.server_manager import TestEnvServerManager
         test_env_server = TestEnvServerManager(host=test_env_host, port=test_env_port)
         test_env_server.start()
 

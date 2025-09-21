@@ -3,12 +3,8 @@ Configuration models for the automation system.
 Contains all configuration data classes.
 """
 import logging
-import os
-import sys
 from dataclasses import dataclass, field
 from typing import Dict, List
-
-from utils import get_chromedriver_path
 
 
 @dataclass
@@ -23,7 +19,6 @@ class WindowConfig:
 @dataclass
 class WebDriverConfig:
     """Configuration for web driver settings."""
-    chrome_driver_path: str = field(default_factory=get_chromedriver_path)
     headless_mode: bool = False
     default_timeout: int = 10
 
