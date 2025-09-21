@@ -4,7 +4,7 @@ This document provides instructions for an AI assistant to help it provide the b
 
 ## Project Overview
 
-This project, `SCADA`, is a modular, reusable automation system built with Python and Selenium WebDriver. It provides a framework for automated browser-based monitoring and interaction with web applications.
+This project, `Browser-Automation-Suite`, is a modular, reusable automation system built with Python and Selenium WebDriver. It provides a framework for automated browser-based monitoring and interaction with web applications.
 
 ## Core Architecture
 
@@ -45,7 +45,7 @@ The framework is designed with a clear separation of concerns:
 ## Project Structure
 
 ```
-SCADA/
+Browser-Automation-Suite/
 ├── src/
 │   ├── config.py              # Configuration management classes
 │   ├── browser_automation.py  # WebDriver and browser automation utilities

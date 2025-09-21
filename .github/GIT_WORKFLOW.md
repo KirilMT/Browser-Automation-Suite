@@ -10,10 +10,10 @@ If you are starting on a new computer or don't have the project locally, you nee
 
 ```sh
 # Clone the repository from GitHub to your local machine
-git clone https://github.com/YourOrganization/SCADA.git
+git clone https://github.com/YourOrganization/Browser-Automation-Suite.git
 
 # Navigate into the newly created project directory
-cd SCADA
+cd Browser-Automation-Suite
 ```
 
 ---

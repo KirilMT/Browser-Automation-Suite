@@ -1,4 +1,4 @@
-# PowerShell script to build SCADA automation executable
+# PowerShell script to build Browser-Automation-Suite automation executable
 # Kill any running main.exe before cleaning
 Stop-Process -Name main -Force -ErrorAction SilentlyContinue
 # Remove previous build artifacts

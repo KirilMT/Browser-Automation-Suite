@@ -35,7 +35,7 @@ This is a modular, reusable automation system built with Python and Selenium Web
 ## Project Structure
 
 ```
-SCADA/
+Browser-Automation-Suite/
 ├── src/
 │   ├── config.py              # Configuration management classes
 │   ├── browser_automation.py  # WebDriver and browser automation utilities

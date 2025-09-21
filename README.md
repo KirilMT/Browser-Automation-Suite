@@ -19,7 +19,7 @@ A modular, reusable automation system built with Python and Selenium WebDriver. 
 ## 📁 Project Structure
 
 ```
-SCADA/
+Browser-Automation-Suite/
 ├── src/
 │   ├── config.py              # Configuration management classes
 │   ├── browser_automation.py  # WebDriver and browser automation utilities
@@ -48,8 +48,8 @@ SCADA/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/YourOrganization/SCADA.git
-   cd SCADA
+   git clone https://github.com/YourOrganization/Browser-Automation-Suite.git
+   cd Browser-Automation-Suite
    ```
 
 2. **Create a virtual environment (recommended):**
@@ -93,7 +93,9 @@ Create a script in the `src/` directory:
 
 ```python
 # basic_usage.py
+# noinspection PyUnresolvedReferences
 import sys
+# noinspection PyUnresolvedReferences
 import os
 sys.path.append(os.path.dirname(__file__))
 
@@ -235,6 +237,7 @@ python serve_test_env.py
 
 Enable detailed logging by adding this to your script:
 ```python
+# noinspection PyUnresolvedReferences
 import logging
 logging.basicConfig(
     level=logging.DEBUG,

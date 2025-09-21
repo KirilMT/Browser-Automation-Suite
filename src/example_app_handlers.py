@@ -22,7 +22,7 @@ class BasePageHandler:
 
 
 class Page1Handler(BasePageHandler):
-    """Handles automation for the SCADA alarms page."""
+    """Handles automation for the Browser-Automation-Suite alarms page."""
 
     def navigate_and_setup(self):
         """Navigate to alarms page and perform initial setup."""
@@ -65,7 +65,7 @@ class Page1Handler(BasePageHandler):
 
 
 class Page2Handler(BasePageHandler):
-    """Handles automation for the SCADA overview page."""
+    """Handles automation for the Browser-Automation-Suite overview page."""
 
     def navigate_and_setup(self):
         """Navigate to overview page and perform initial setup."""

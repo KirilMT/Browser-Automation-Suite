@@ -1,7 +1,7 @@
 @echo off
 REM Kill any running main.exe before cleaning
 taskkill /f /im main.exe >nul 2>&1
-REM Build SCADA automation executable using PyInstaller
+REM Build Browser-Automation-Suite automation executable using PyInstaller
 REM Uncomment and edit the next line if you use a virtual environment
 REM call .\venv\Scripts\activate
 

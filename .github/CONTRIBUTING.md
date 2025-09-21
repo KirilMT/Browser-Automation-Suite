@@ -52,7 +52,7 @@ The section below is specific to the **Generic Browser Automation Framework** pr
 
 ### Before contributing code
 
-Before doing any significant work, open an issue to propose your idea and ensure alignment. You can either [file a new issue](https://github.com/YourOrganization/SCADA/issues/new/choose), or comment on an [existing one](https://github.com/YourOrganization/SCADA/issues). A pull request (PR) that does not go through this coordination process may be closed to avoid wasted effort.
+Before doing any significant work, open an issue to propose your idea and ensure alignment. You can either [file a new issue](https://github.com/YourOrganization/Browser-Automation-Suite/issues/new/choose), or comment on an [existing one](https://github.com/YourOrganization/Browser-Automation-Suite/issues). A pull request (PR) that does not go through this coordination process may be closed to avoid wasted effort.
 
 ## Checking the issue tracker
 
@@ -141,7 +141,7 @@ Using the GitHub "Revert" button is the preferred method over manually creating 
 
 ### Keeping the pull request dashboard clean
 
-We aim to keep https://github.com/YourOrganization/SCADA/pulls clean so that we can quickly notice and review incoming changes that require attention. Given that goal, please do not open a pull request unless you are ready for a code review. Draft pull requests and ones without author activity for more than one business day may be closed (they can always be reopened later). If you're still working on something, continue iterating on your branch without creating a pull request until it’s ready for review.
+We aim to keep https://github.com/YourOrganization/Browser-Automation-Suite/pulls clean so that we can quickly notice and review incoming changes that require attention. Given that goal, please do not open a pull request unless you are ready for a code review. Draft pull requests and ones without author activity for more than one business day may be closed (they can always be reopened later). If you're still working on something, continue iterating on your branch without creating a pull request until it’s ready for review.
 
 ### Addressing code review comments
 
@@ -154,7 +154,7 @@ After pushing, [click the button](https://docs.github.com/en/pull-requests/colla
 When adding a TODO to the codebase, always include a link to an issue, no matter how small the task. Use the format:
 
 '''
-// TODO(https://github.com/YourOrganization/SCADA/issues/): explain what needs to be done
+// TODO(https://github.com/YourOrganization/Browser-Automation-Suite/issues/): explain what needs to be done
 '''
 
 This helps provide context for future readers and keeps the TODO relevant and actionable as the project evolves.
