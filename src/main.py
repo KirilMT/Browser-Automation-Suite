@@ -2,28 +2,30 @@
 Automation System Entry Point
 This script initializes and runs the browser automation system.
 """
-
+import logging
 from automation_system import AutomationSystem
 from config_models import AutomationConfig
+from logger_config import setup_logging
 
 def main():
     """Main function that starts the automation system."""
+    setup_logging()
+
     # Try to load local configuration, fall back to example config
     try:
         from config import LOCAL_APP_CONFIG
-        print("Loaded local configuration from config.py.")
-        config_dict = LOCAL_APP_CONFIG
+        logging.info("Loaded local configuration from config.py.")
     except ImportError:
-        print("No local configuration found. Loading from example_config.py.")
+        logging.info("No local configuration found. Loading from example_config.py.")
         from example_config import LOCAL_APP_CONFIG
-        config_dict = LOCAL_APP_CONFIG
+    config_dict = LOCAL_APP_CONFIG
 
     # Ensure filters and enabled exist
     if "filters" not in config_dict:
-        print("Warning: 'filters' section missing in config. Setting default.")
+        logging.warning("'filters' section missing in config. Setting default.")
         config_dict["filters"] = {"enabled": True, "selectors": []}
     if "enabled" not in config_dict["filters"]:
-        print("Warning: 'enabled' flag missing in filters. Setting default True.")
+        logging.warning("'enabled' flag missing in filters. Setting default True.")
         config_dict["filters"]["enabled"] = True
 
     # Ensure test_env_host and test_env_port exist
@@ -35,7 +37,7 @@ def main():
     # Launch test environment server if in test mode
     test_env_server = None
     if hasattr(config, 'filters') and hasattr(config.filters, 'enabled') and config.filters.enabled is False:
-        print(f"Test environment detected: launching local test server at {test_env_host}:{test_env_port} ...")
+        logging.info(f"Test environment detected: launching local test server at {test_env_host}:{test_env_port} ...")
         from test_env.server_manager import TestEnvServerManager
         test_env_server = TestEnvServerManager(host=test_env_host, port=test_env_port)
         test_env_server.start()
@@ -44,21 +46,17 @@ def main():
     automation_system = AutomationSystem(config)
 
     try:
-        print("Initializing automation system...")
+        logging.info("Initializing automation system...")
         automation_system.start_automation()
 
-        print("Automation system is running. Close browser windows to exit.")
+        logging.info("Automation system is running. Close browser windows to exit.")
         automation_system.wait_for_completion()
 
     except KeyboardInterrupt:
-        print("\nReceived interrupt signal. Shutting down gracefully...")
+        logging.info("Received interrupt signal. Shutting down gracefully...")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}", exc_info=True)
     finally:
         automation_system.cleanup()
         if test_env_server:
             test_env_server.stop()
-    input("Press Enter to exit...")
-
-if __name__ == "__main__":
-    main()

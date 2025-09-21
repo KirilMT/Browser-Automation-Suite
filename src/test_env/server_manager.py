@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 import signal
+import logging
 
 class TestEnvServerManager:
     """
@@ -15,7 +16,7 @@ class TestEnvServerManager:
 
     def start(self):
         if self.process is not None and self.process.poll() is None:
-            print("Test environment server is already running.")
+            logging.warning("Test environment server is already running.")
             return
         try:
             self.process = subprocess.Popen(
@@ -24,9 +25,9 @@ class TestEnvServerManager:
                 stderr=subprocess.PIPE,
                 cwd=os.path.dirname(self.script_path)
             )
-            print(f"Test environment server started at http://{self.host}:{self.port}/")
+            logging.info(f"Test environment server started at http://{self.host}:{self.port}/")
         except Exception as e:
-            print(f"Failed to start test environment server: {e}")
+            logging.error(f"Failed to start test environment server: {e}", exc_info=True)
             self.process = None
 
     def stop(self):
@@ -37,8 +38,8 @@ class TestEnvServerManager:
                 else:
                     self.process.terminate()
                 self.process.wait(timeout=5)
-                print("Test environment server stopped.")
+                logging.info("Test environment server stopped.")
             except Exception as e:
-                print(f"Failed to stop test environment server: {e}")
+                logging.error(f"Failed to stop test environment server: {e}", exc_info=True)
         self.process = None
 

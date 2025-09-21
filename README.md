@@ -53,16 +53,24 @@ Browser-Automation-Suite/
    ```
 
 2. **Create a virtual environment (recommended):**
-   ```powershell
-   # On Windows (PowerShell)
-   py -3 -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
    ```bash
-   # On macOS/Linux
-   python3 -m venv .venv
-   source .venv/bin/activate
+   py -3 -m venv .venv
    ```
+   This creates a `.venv` directory in your project root.
+
+   **Activate the virtual environment:**
+   - On **Windows (PowerShell)**:
+     ```powershell
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - On **Windows (Command Prompt)**:
+     ```cmd
+     .venv\Scripts\activate
+     ```
+   - On **macOS/Linux (bash/zsh):**
+     ```bash
+     source .venv/bin/activate
+     ```
 
 3. **Install dependencies:**
    ```bash
@@ -265,3 +273,8 @@ For issues and questions:
 2. Review configuration examples in `example_config.py`.
 3. Verify target system compatibility.
 4. Test individual components separately.
+
+---
+
+**Version:** 1.0.0
+**Last Updated:** September 2025

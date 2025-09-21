@@ -2,6 +2,7 @@
 Browser automation utilities.
 Handles Chrome WebDriver initialization and common web interactions.
 """
+import logging
 import os
 import subprocess
 import sys
@@ -17,6 +18,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 
 from config_models import WebDriverConfig
+from utils import get_chromedriver_path
 
 
 class WebDriverManager:
@@ -26,30 +28,7 @@ class WebDriverManager:
         self.config = config
         self.driver: Optional[webdriver.Chrome] = None
         self.service_process: Optional[subprocess.Popen] = None
-        self.chrome_driver_path = self._resolve_chromedriver_path()
-
-    def _resolve_chromedriver_path(self) -> str:
-        """Resolves the path to chromedriver.exe for both development and PyInstaller builds."""
-        try:
-            if getattr(sys, 'frozen', False):
-                # Running as a PyInstaller bundle
-                base_path = sys._MEIPASS
-            else:
-                # Running in development
-                base_path = os.path.dirname(__file__)
-            # Try both possible locations
-            possible_paths = [
-                os.path.join(base_path, 'chromedriver.exe'),
-                os.path.join(base_path, 'src', 'chromedriver.exe')
-            ]
-            for chromedriver_path in possible_paths:
-                if os.path.exists(chromedriver_path):
-                    print(f"[DEBUG] Resolved chromedriver.exe path: {chromedriver_path}")
-                    return chromedriver_path
-            raise FileNotFoundError(f"chromedriver.exe not found in any expected location: {possible_paths}")
-        except Exception as e:
-            print(f"Error resolving chromedriver path: {e}")
-            raise
+        self.chrome_driver_path = get_chromedriver_path()
 
     def start_driver(self) -> Tuple[webdriver.Chrome, subprocess.Popen]:
         """Start Chrome WebDriver with configured options."""
@@ -78,8 +57,11 @@ class WebDriverManager:
 
             return self.driver, self.service_process
 
+        except (FileNotFoundError, WebDriverException) as e:
+            logging.error(f"Failed to start Chrome WebDriver: {e}", exc_info=True)
+            raise
         except Exception as e:
-            print(f"Failed to start Chrome WebDriver: {e}")
+            logging.error(f"An unexpected error occurred while starting Chrome WebDriver: {e}", exc_info=True)
             raise
 
     def wait_for_element(self, by: By, value: str, timeout: int = None) -> Optional[any]:
@@ -97,7 +79,7 @@ class WebDriverManager:
             )
             return element
         except TimeoutException:
-            print(f"Element with {by}='{value}' not found within {timeout} seconds.")
+            logging.warning(f"Element with {by}='{value}' not found within {timeout} seconds.")
             return None
 
     def click_element_safe(self, by: By, value: str, timeout: int = None) -> bool:
@@ -108,7 +90,7 @@ class WebDriverManager:
                 element.click()
                 return True
             except Exception as e:
-                print(f"Failed to click element {by}='{value}': {e}")
+                logging.error(f"Failed to click element {by}='{value}': {e}", exc_info=True)
                 return False
         return False
 
@@ -124,10 +106,10 @@ class WebDriverManager:
                     element.click()
                     return True
                 else:
-                    print(f"Element {by}='{value}' is not visible")
+                    logging.warning(f"Element {by}='{value}' is not visible")
                     return False
             except Exception as e:
-                print(f"Failed to interact with element {by}='{value}': {e}")
+                logging.error(f"Failed to interact with element {by}='{value}': {e}", exc_info=True)
                 return False
         return False
 
@@ -140,7 +122,7 @@ class WebDriverManager:
             self.driver.set_window_position(x, y)
             self.driver.set_window_size(width, height)
         except Exception as e:
-            print(f"Failed to set window position/size: {e}")
+            logging.error(f"Failed to set window position/size: {e}", exc_info=True)
 
     def navigate_to(self, url: str):
         """Navigate to specified URL."""
@@ -149,9 +131,9 @@ class WebDriverManager:
 
         try:
             self.driver.get(url)
-            print(f"Navigated to: {self.driver.title}")
+            logging.info(f"Navigated to: {self.driver.title}")
         except Exception as e:
-            print(f"Failed to navigate to {url}: {e}")
+            logging.error(f"Failed to navigate to {url}: {e}", exc_info=True)
 
     def quit_driver(self):
         """Safely quit the WebDriver."""
@@ -159,13 +141,13 @@ class WebDriverManager:
             try:
                 self.driver.quit()
             except Exception as e:
-                print(f"Error occurred while closing browser: {e}")
+                logging.error(f"Error occurred while closing browser: {e}", exc_info=True)
 
         if self.service_process:
             try:
                 self.service_process.terminate()
             except Exception as e:
-                print(f"Error terminating ChromeDriver process: {e}")
+                logging.error(f"Error terminating ChromeDriver process: {e}", exc_info=True)
 
 
 class ProcessManager:
@@ -177,7 +159,7 @@ class ProcessManager:
         for process in psutil.process_iter(['pid', 'name']):
             try:
                 if 'chromedriver.exe' in process.info['name']:
-                    print(f"Terminating remaining ChromeDriver process: {process.info['pid']}")
+                    logging.info(f"Terminating remaining ChromeDriver process: {process.info['pid']}")
                     process.terminate()
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
@@ -190,5 +172,5 @@ class ProcessManager:
                 time.sleep(1)
             driver_manager.quit_driver()
         except Exception as e:
-            print(f"Error in browser monitoring: {e}")
+            logging.error(f"Error in browser monitoring: {e}", exc_info=True)
             driver_manager.quit_driver()

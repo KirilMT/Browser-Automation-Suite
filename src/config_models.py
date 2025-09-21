@@ -2,22 +2,13 @@
 Configuration models for the automation system.
 Contains all configuration data classes.
 """
+import logging
 import os
 import sys
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-
-def get_chromedriver_path():
-    """Return absolute path to chromedriver.exe, handling PyInstaller bundles."""
-    if hasattr(sys, '_MEIPASS'):
-        # If running in a PyInstaller bundle
-        path = os.path.join(sys._MEIPASS, 'src', 'chromedriver.exe')
-    else:
-        # If running as a script
-        path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'chromedriver.exe'))
-    print(f"[DEBUG] Resolved chromedriver.exe path: {path}")
-    return path
+from utils import get_chromedriver_path
 
 
 @dataclass

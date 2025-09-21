@@ -21,12 +21,12 @@ LOCAL_APP_CONFIG = {
         "default_timeout": 10
     },
     "urls": {
-        "base_url": "https://your-target-system.com/app",
-        "page1_path": "/path/to/page1",
-        "page2_path": "/path/to/page2"
+        "base_url": "http://localhost:8000",
+        "page1_path": "/page1.html",
+        "page2_path": "/page2.html"
     },
     "filters": {
-        "enabled": True,
+        "enabled": False,
         "selectors": [
             # Example selector: "#app > div > ul > li:nth-child(1)"
         ]

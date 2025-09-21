@@ -2,6 +2,7 @@ import http.server
 import socketserver
 import os
 import sys
+import logging
 
 class TestEnvServer:
     """
@@ -16,19 +17,24 @@ class TestEnvServer:
         os.chdir(self.directory)
         handler = http.server.SimpleHTTPRequestHandler
         with socketserver.TCPServer((self.host, self.port), handler) as httpd:
-            print(f"Serving test environment at http://{self.host}:{self.port}/")
-            print(f"Serving files from: {self.directory}")
+            logging.info(f"Serving test environment at http://{self.host}:{self.port}/")
+            logging.info(f"Serving files from: {self.directory}")
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
-                print("\nServer stopped by user.")
+                logging.info("Server stopped by user.")
             except Exception as e:
-                print(f"Error: {e}")
+                logging.error(f"Error: {e}", exc_info=True)
             finally:
                 httpd.server_close()
 
 if __name__ == "__main__":
     import argparse
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        stream=sys.stdout
+    )
     parser = argparse.ArgumentParser(description="Launch local server for test_env/pages/")
     parser.add_argument('--host', default='localhost', help='Host to bind (default: localhost)')
     parser.add_argument('--port', type=int, default=8000, help='Port to bind (default: 8000)')

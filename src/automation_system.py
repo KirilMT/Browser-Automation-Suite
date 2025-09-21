@@ -1,7 +1,9 @@
+from __future__ import annotations
 """
 Main automation system.
 Orchestrates multiple browser instances for web automation.
 """
+import logging
 import threading
 from typing import Dict, List, Optional
 
@@ -11,9 +13,9 @@ from browser_automation import WebDriverManager, ProcessManager
 # Try to load local handlers, fall back to example handlers
 try:
     from app_handlers import Page1Handler, Page2Handler
-    print("Loaded local handlers from app_handlers.py.")
+    logging.info("Loaded local handlers from app_handlers.py.")
 except ImportError:
-    print("No local handlers found. Loading from example_app_handlers.py.")
+    logging.info("No local handlers found. Loading from example_app_handlers.py.")
     from example_app_handlers import Page1Handler, Page2Handler
 
 
@@ -29,7 +31,7 @@ class AutomationSystem:
 
     def start_automation(self):
         """Start the complete automation system."""
-        print("Starting automation system...")
+        logging.info("Starting automation system...")
 
         try:
             # Initialize driver managers
@@ -56,10 +58,10 @@ class AutomationSystem:
             self._start_monitoring_threads()
 
             self.is_running = True
-            print("Automation system started successfully")
+            logging.info("Automation system started successfully")
 
         except Exception as e:
-            print(f"Failed to start automation: {e}")
+            logging.error(f"Failed to start automation: {e}", exc_info=True)
             self.cleanup()
             raise
 
@@ -100,31 +102,31 @@ class AutomationSystem:
     def _run_page1_automation(self, handler: Page1Handler):
         """Run page 1 automation logic."""
         try:
-            print("Starting page 1 automation...")
+            logging.info("Starting page 1 automation...")
             handler.navigate_and_setup()
 
             # TODO: Add any continuous monitoring logic here
             # For now, just keep the page open
 
         except Exception as e:
-            print(f"Error in page 1 automation: {e}")
+            logging.error(f"Error in page 1 automation: {e}", exc_info=True)
 
     def _run_page2_automation(self, handler: Page2Handler):
         """Run page 2 automation logic."""
         try:
-            print("Starting page 2 automation...")
+            logging.info("Starting page 2 automation...")
             handler.navigate_and_setup()
 
             # TODO: Add any continuous monitoring logic here
             # For now, just keep the page open
 
         except Exception as e:
-            print(f"Error in page 2 automation: {e}")
+            logging.error(f"Error in page 2 automation: {e}", exc_info=True)
 
     def wait_for_completion(self):
         """Wait for all automation threads to complete."""
         if not self.is_running:
-            print("Automation system is not running")
+            logging.warning("Automation system is not running")
             return
 
         try:
@@ -132,16 +134,16 @@ class AutomationSystem:
             for monitor_thread in self.monitor_threads:
                 monitor_thread.join()
 
-            print("All browser windows have been closed")
+            logging.info("All browser windows have been closed")
 
         except KeyboardInterrupt:
-            print("Received keyboard interrupt, shutting down...")
+            logging.info("Received keyboard interrupt, shutting down...")
         finally:
             self.cleanup()
 
     def cleanup(self):
         """Clean up resources and terminate processes."""
-        print("Cleaning up automation system...")
+        logging.info("Cleaning up automation system...")
 
         # Quit all drivers
         for driver_manager in self.driver_managers:
@@ -151,7 +153,7 @@ class AutomationSystem:
         ProcessManager.terminate_remaining_chromedriver_processes()
 
         self.is_running = False
-        print("Cleanup completed")
+        logging.info("Cleanup completed")
 
     def get_system_status(self) -> Dict:
         """Get current system status."""
@@ -181,10 +183,10 @@ def main():
         automation_system.start_automation()
         automation_system.wait_for_completion()
     except Exception as e:
-        print(f"Automation failed: {e}")
+        logging.error(f"Automation failed: {e}", exc_info=True)
     finally:
         automation_system.cleanup()
-        print("Automation system terminated")
+        logging.info("Automation system terminated")
 
 
 if __name__ == "__main__":
