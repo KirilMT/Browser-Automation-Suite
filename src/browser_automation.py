@@ -17,7 +17,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 from config_models import WebDriverConfig
 
@@ -37,9 +36,20 @@ class WebDriverManager:
             if self.config.headless_mode:
                 chrome_options.add_argument("--headless")
 
+            # Determine the path to chromedriver
+            if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+                # Running as a bundled executable, use the bundled chromedriver
+                chromedriver_path = os.path.join(sys._MEIPASS, "chromedriver.exe")
+                logging.info(f"Using bundled chromedriver at: {chromedriver_path}")
+            else:
+                # Running in a normal Python environment, use webdriver-manager
+                from webdriver_manager.chrome import ChromeDriverManager
+                logging.info("Using webdriver-manager to get chromedriver.")
+                chromedriver_path = ChromeDriverManager().install()
+
             # The Service object will manage the ChromeDriver process
             service = Service(
-                ChromeDriverManager().install(),
+                executable_path=chromedriver_path,
                 log_output=subprocess.PIPE  # Redirect logs to a pipe
             )
 

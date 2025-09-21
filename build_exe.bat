@@ -1,14 +1,19 @@
 @echo off
+
+REM Define the path to the Python executable in the virtual environment
+set PYTHON_EXE=%~dp0\.venv\Scripts\python.exe
+
 REM Kill any running main.exe before cleaning
-taskkill /f /im main.exe >nul 2>&1
-REM Build Browser-Automation-Suite automation executable using PyInstaller
-REM Uncomment and edit the next line if you use a virtual environment
-REM call .\venv\Scripts\activate
+taskkill /F /IM main.exe /T > nul 2>&1
 
-REM Clean previous build artifacts
-rmdir /s /q dist
-rmdir /s /q build
-if exist main.spec del main.spec
+REM Remove previous build artifacts
+rmdir /s /q dist > nul 2>&1
+rmdir /s /q build > nul 2>&1
+del main.spec > nul 2>&1
 
-REM Build the executable and include chromedriver.exe
-pyinstaller --onefile --add-data "src\chromedriver.exe;src" src\main.py
+REM Build the executable
+"%PYTHON_EXE%" -m PyInstaller --onefile src/main.py
+
+echo.
+echo Build complete.
+pause

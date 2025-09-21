@@ -2,19 +2,22 @@
 Automation System Entry Point
 This script initializes and runs the browser automation system.
 """
+import sys
 import logging
-from automation_system import AutomationSystem
-from config_models import AutomationConfig
-from logger_config import setup_logging
 
-def main():
-    """Main function that starts the automation system."""
+def run_app():
+    """Initializes and runs the application."""
+    # Moved imports inside to catch import errors
+    from automation_system import AutomationSystem
+    from config_models import AutomationConfig
+    from logger_config import setup_logging
+
     setup_logging()
 
     # Try to load local configuration, fall back to example config
     try:
         from config import LOCAL_APP_CONFIG
-        logging.info("Loaded local configuration from config.py.")
+        logging.info("Loaded local configuration from config.py.bak.")
     except ImportError:
         logging.info("No local configuration found. Loading from example_config.py.")
         from example_config import LOCAL_APP_CONFIG
@@ -55,8 +58,6 @@ def main():
         logging.info("Automation system is running. Press Ctrl+C to exit.")
         automation_system.wait_for_completion()
 
-    except Exception as e:
-        logging.error(f"An error occurred: {e}", exc_info=True)
     finally:
         logging.info("Shutting down...")
         automation_system.cleanup()
@@ -64,4 +65,13 @@ def main():
             test_env_server.stop()
 
 if __name__ == "__main__":
-    main()
+    try:
+        run_app()
+    except Exception:
+        # Configure basic logging to ensure the error is visible
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.exception("A critical error occurred during application startup or execution.")
+    finally:
+        # If running as a bundled executable, pause before exiting
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            input("Press Enter to exit...")
