@@ -24,12 +24,13 @@ This is a modular, reusable automation system built with Python and Selenium Web
 - **Thread-Safe**: Multi-threaded design for concurrent browser operations.
 - **Error Handling**: Comprehensive error handling and graceful shutdown mechanisms.
 - **Process Management**: Automatic cleanup of browser processes.
+- **Automated Driver Management**: Uses `webdriver-manager` to automatically download and manage the correct ChromeDriver.
 - **Automated EXE Build**: Batch and PowerShell scripts for packaging your automation as a standalone executable.
 
 ## Technologies
 
 - **Programming Language:** Python
-- **Framework/Libraries:** Selenium WebDriver, psutil, pyautogui
+- **Framework/Libraries:** Selenium WebDriver, psutil, pyautogui, webdriver-manager
 - **Dependencies:** Listed in `requirements.txt`.
 
 ## Project Structure
@@ -37,16 +38,19 @@ This is a modular, reusable automation system built with Python and Selenium Web
 ```
 Browser-Automation-Suite/
 ├── src/
-│   ├── config.py              # Configuration management classes
+│   ├── config_models.py       # Configuration management classes
 │   ├── browser_automation.py  # WebDriver and browser automation utilities
-│   ├── app_handlers.py        # Application-specific page interaction handlers
+│   ├── example_app_handlers.py # Application-specific page interaction handlers
 │   ├── automation_system.py   # Main orchestration system
 │   ├── main.py                # Entry point script
 │   ├── example_config.py      # Example configuration templates
-│   └── chromedriver.exe       # Chrome WebDriver executable
+│   └── logger_config.py       # Logging setup
+├── tests/
+│   ├── pages/                 # Dummy HTML pages for local testing
+│   ├── serve_test_env.py      # Simple HTTP server for the test environment
+│   └── server_manager.py      # Manages the test server subprocess
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
-├── main.spec                  # PyInstaller spec file (ignored by git)
 ├── build_exe.bat              # Batch script for building EXE
 ├── build_exe.ps1              # PowerShell script for building EXE
 └── .gitignore                 # Git ignore rules
@@ -55,7 +59,7 @@ Browser-Automation-Suite/
 ## Quick Test Guide
 
 To test the application's end-to-end workflow:
-1.  Run the application with `cd src` then `python main.py`.
+1.  Run the application from the project root with `python -m src.main`.
 2.  The system will start the browser automation based on the configuration in `main.py` or a custom config file.
 3.  Observe the browser instances performing the automated tasks.
 4.  Check the console output for logs and status messages.
