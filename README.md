@@ -401,6 +401,21 @@ link_page1.click()
 driver.quit()
 ```
 
+## Logging and Output Control
+
+All output in this project is managed via Python’s built-in logging system. You can control the verbosity of messages for each module (e.g., browser_automation, main, automation_system) by setting the log level:
+
+```python
+from browser_automation import set_log_level
+set_log_level("DEBUG")  # Options: DEBUG, INFO, WARNING, ERROR
+```
+
+By default, only warnings and errors are shown. Set to INFO or DEBUG for more detailed output during development or troubleshooting.
+
+## Customizing Handlers
+
+To implement your own automation logic, copy `src/example_app_handlers.py` to `src/app_handlers.py` and customize the handler classes. The template provides a robust, class-based structure and logging integration. All output should use the logger for consistency and configurability.
+
 ## License
 
 This project is provided as-is for educational and development purposes. Ensure compliance with your organization's policies when using it with production systems.

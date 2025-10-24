@@ -8,6 +8,8 @@ We'd love to accept your patches and contributions to this project. There are ju
 - [Testing Guidelines](#testing-guidelines)
 - [Code Style](#code-style)
 - [The Review Process](#the-review-process)
+- [Logging and Output](#logging-and-output)
+- [Handler Templates](#handler-templates)
 
 ## Community Guidelines
 
@@ -135,10 +137,10 @@ To automatically close an issue when a pull request is merged, use a keyword lik
 - Address any feedback by pushing additional commits to your branch. This makes it easier for reviewers to see what has changed.
 - Once the pull request is approved and all checks pass, it will be squashed and merged.
 
-### Leaving a TODO
+## Logging and Output
 
-When adding a `TODO` to the codebase, always include a link to a GitHub issue to provide context.
+All output in this project is managed via Python’s logging system. Use logger calls (not print) for all messages. You can control verbosity by setting the log level (DEBUG, INFO, WARNING, ERROR) for each module. See the README for details.
 
-```python
-# TODO(https://github.com/<your-org>/<your-repo>/issues/<issue-number>): Explain what needs to be done.
-```
+## Handler Templates
+
+When adding or modifying automation handlers, use the template in `src/example_app_handlers.py` as your starting point. This ensures robust error handling, logging, and compatibility with the system architecture.

@@ -4,8 +4,17 @@ Contains all configuration data classes.
 """
 import os
 import sys
+import logging
 from dataclasses import dataclass, field
 from typing import Dict, List
+
+
+logger = logging.getLogger("config_models")
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
+handler.setFormatter(formatter)
+logger.handlers = [handler]
 
 
 def get_chromedriver_path():
@@ -16,7 +25,7 @@ def get_chromedriver_path():
     else:
         # If running as a script
         path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'chromedriver.exe'))
-    print(f"[DEBUG] Resolved chromedriver.exe path: {path}")
+    logger.debug(f"Resolved chromedriver.exe path: {path}")
     return path
 
 
