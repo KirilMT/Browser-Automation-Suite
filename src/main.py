@@ -58,7 +58,6 @@ def main():
         automation_system.cleanup()
         if test_env_server:
             test_env_server.stop()
-    input("Press Enter to exit...")
 
 if __name__ == "__main__":
     main()
