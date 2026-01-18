@@ -68,7 +68,11 @@ class Page1Handler(BasePageHandler):
         import pyautogui
         screen_width, screen_height = pyautogui.size()
         y_position = (self.config.window.app_window_height - self.config.window.app_window_header_height - self.config.window.page1_header_height)
-        height = (screen_height - self.config.window.app_window_height + self.config.window.page1_header_height)
+
+        # Calculate height based on configured total app height to prevent multi-monitor overflow
+        bottom_limit = self.config.window.app_window_height
+        height = bottom_limit - y_position
+
         self.setup_window_layout(self.config.window.window_x_offset, y_position, screen_width, height)
 
 
@@ -90,5 +94,5 @@ class Page2Handler(BasePageHandler):
             self.config.window.window_x_offset,
             -self.config.window.app_window_header_height,
             screen_width,
-            self.config.window.page2_header_height
+            self.config.window.app_window_height
         )

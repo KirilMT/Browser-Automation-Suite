@@ -14,12 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.3] - 2026-01-18
 
 ### Added
-- Added `page2_header_height` configuration option for independent control of the second window size.
 - Improved browser monitoring to prevent premature termination when a window is closed.
 
 ### Changed
+- Fixed Page 1 window layout calculation to prevent overflow on multi-monitor setups.
 - Refactored `app_handlers.py` and `example_app_handlers.py` to use `logging` module instead of `print` statements.
-- Updated configuration examples to include new window sizing options.
 
 ## [1.2.2] - 2025-10-24
 
