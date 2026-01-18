@@ -232,26 +232,49 @@ class ProcessManager:
         """Monitor all registered WebDriverManager instances and cleanup when all browsers are closed or dead."""
         try:
             while True:
-                all_closed = True
-                for manager in ProcessManager.active_managers:
-                    try:
-                        # If driver is None or window_handles is empty, treat as closed
-                        if not manager.driver or not manager.driver.window_handles:
-                            continue
-                        else:
+                try:
+                    all_closed = True
+                    for manager in ProcessManager.active_managers:
+                        try:
+                            # If driver is None or window_handles is empty, treat as closed
+                            if not manager.driver:
+                                continue
+
+                            # Check window handles with extra safety
+                            try:
+                                handles = manager.driver.window_handles
+                                if not handles:
+                                    continue
+                            except Exception as e:
+                                # Connection error typically means closed
+                                logger.debug(f"[Monitor] Driver {id(manager)} unreachable ({e}). Treating as closed.")
+                                continue
+
+                            # If we get here, this manager is active
                             all_closed = False
                             break
-                    except Exception as e:
-                        # If accessing window_handles fails, treat as closed
-                        logger.debug(f"[Monitor] Exception accessing window_handles: {e}. Treating as closed.")
-                        continue
-                if all_closed:
-                    logger.info("All browser windows are closed or dead. Cleaning up all drivers.")
-                    for manager in ProcessManager.active_managers:
-                        manager.quit_driver()
-                    break
+                        except Exception as e:
+                            logger.warn(f"[Monitor] Error checking manager state: {e}")
+                            continue
+
+                    if all_closed:
+                        logger.info("All browser windows are closed or dead. Cleaning up all drivers.")
+                        for manager in ProcessManager.active_managers:
+                            try:
+                                manager.quit_driver()
+                            except Exception:
+                                pass
+                        break
+
+                except Exception as inner_e:
+                    logger.error(f"Error inside monitor loop: {inner_e}")
+                    # Don't break the loop, just wait and retry
+
                 time.sleep(1)
         except Exception as e:
-            logger.error(f"Error in global browser monitoring: {e}")
+            logger.error(f"Critical error in global browser monitoring: {e}")
             for manager in ProcessManager.active_managers:
-                manager.quit_driver()
+                try:
+                    manager.quit_driver()
+                except Exception:
+                    pass

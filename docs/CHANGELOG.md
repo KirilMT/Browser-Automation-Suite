@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrated and adapted .github and docs directories from Troubleshooting-Wizard for Browser-Automation-Suite.
 - Updated documentation, contribution guidelines, and project instructions to match Browser-Automation-Suite structure and workflow.
 
+## [1.2.3] - 2026-01-18
+
+### Added
+- Added `page2_header_height` configuration option for independent control of the second window size.
+- Improved browser monitoring to prevent premature termination when a window is closed.
+
+### Changed
+- Refactored `app_handlers.py` and `example_app_handlers.py` to use `logging` module instead of `print` statements.
+- Updated configuration examples to include new window sizing options.
+
 ## [1.2.2] - 2025-10-24
 
 ### Added
@@ -21,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Documentation updated to reflect logging system and handler customization.
 - Improved error handling and output consistency throughout the codebase.
+

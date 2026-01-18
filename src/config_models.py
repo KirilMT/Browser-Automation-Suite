@@ -35,6 +35,7 @@ class WindowConfig:
     app_window_height: int = 1100
     app_window_header_height: int = 210
     page1_header_height: int = 265
+    page2_header_height: int = 265
     window_x_offset: int = -5
 
 

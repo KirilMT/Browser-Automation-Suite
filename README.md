@@ -161,6 +161,7 @@ config.urls.page2_path = "/dashboard"
 
 # Window settings
 config.window.app_window_height = 1200
+config.window.page2_header_height = 250
 config.window.window_x_offset = 0
 
 # WebDriver settings

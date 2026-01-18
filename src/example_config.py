@@ -13,6 +13,7 @@ LOCAL_APP_CONFIG = {
         "app_window_height": 1080,
         "app_window_header_height": 200,
         "page1_header_height": 250,
+        "page2_header_height": 250,
         "window_x_offset": 0
     },
     "webdriver": {

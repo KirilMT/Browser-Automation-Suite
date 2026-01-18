@@ -67,10 +67,9 @@ class Page1Handler(BasePageHandler):
         """Setup window layout for alarms page."""
         import pyautogui
         screen_width, screen_height = pyautogui.size()
-        # y_position = (self.config.window.app_window_height - self.config.window.app_window_header_height - self.config.window.page1_header_height)
-        # height = (screen_height - self.config.window.app_window_height + self.config.window.page1_header_height)
-        # self.setup_window_layout(self.config.window.window_x_offset, y_position, screen_width, height)
-        logger.info("Example: Setting up Page 1 window layout (not implemented).")
+        y_position = (self.config.window.app_window_height - self.config.window.app_window_header_height - self.config.window.page1_header_height)
+        height = (screen_height - self.config.window.app_window_height + self.config.window.page1_header_height)
+        self.setup_window_layout(self.config.window.window_x_offset, y_position, screen_width, height)
 
 
 class Page2Handler(BasePageHandler):
@@ -87,10 +86,9 @@ class Page2Handler(BasePageHandler):
         """Setup window layout for overview page."""
         import pyautogui
         screen_width, _ = pyautogui.size()
-        # self.setup_window_layout(
-        #     self.config.window.window_x_offset,
-        #     -self.config.window.app_window_header_height,
-        #     screen_width,
-        #     self.config.window.app_window_height
-        # )
-        logger.info("Example: Setting up Page 2 window layout (not implemented).")
+        self.setup_window_layout(
+            self.config.window.window_x_offset,
+            -self.config.window.app_window_header_height,
+            screen_width,
+            self.config.window.page2_header_height
+        )
