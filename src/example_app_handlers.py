@@ -41,7 +41,67 @@ class Page1Handler(BasePageHandler):
         # TODO: Implement page-specific setup logic here
         # self._close_menu()
         # self._configure_alarm_filters()
+        self._resize_table_headers()
         self._setup_page1_window_layout()
+
+    def _resize_table_headers(self):
+        """
+        Resize table headers and body cells using JavaScript.
+        Installs a MutationObserver to ensure resize persists after dynamic updates.
+        """
+        try:
+            script = """
+                const columnConfig = {
+                    'select': '50px',
+                    'activeTime': '250px',
+                    'Alternate Language': '750px',
+                    'priority': '100px'
+                };
+
+                function applyColumnStyles() {
+                    const cells = document.querySelectorAll('.ia_table__cell');
+                    let count = 0;
+                    cells.forEach(cell => {
+                        const colId = cell.getAttribute('data-column-id');
+                        if (colId && columnConfig[colId]) {
+                            const width = columnConfig[colId];
+                            // Only apply if needed to avoid redundant style recalculations
+                            if (cell.style.width !== width) {
+                                cell.style.setProperty('width', width, 'important');
+                                cell.style.setProperty('min-width', width, 'important');
+                                cell.style.setProperty('max-width', width, 'important');
+                                cell.style.setProperty('flex', '0 0 ' + width, 'important');
+                                cell.style.setProperty('box-sizing', 'border-box', 'important');
+                                cell.style.setProperty('overflow', 'hidden', 'important');
+                                count++;
+                            }
+                        }
+                    });
+                    return count;
+                }
+
+                // Apply immediately
+                const initialCount = applyColumnStyles();
+
+                // Setup persistent observer to handle React/dynamic updates
+                if (!window.iaTableResizeObserver) {
+                    window.iaTableResizeObserver = new MutationObserver((mutations) => {
+                        applyColumnStyles();
+                    });
+                    
+                    // Observe the document body to catch any table re-renders
+                    window.iaTableResizeObserver.observe(document.body, { 
+                        childList: true, 
+                        subtree: true 
+                    });
+                }
+                
+                return initialCount;
+            """
+            count = self.driver_manager.driver.execute_script(script)
+            logger.info(f"Resized {count} table cells and installed persistent observer.")
+        except Exception as e:
+            logger.warning(f"Could not resize table headers: {e}")
 
     def _close_menu(self):
         """(Example) Close the navigation menu."""
