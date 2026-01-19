@@ -47,30 +47,84 @@ class Page1Handler(BasePageHandler):
     def _resize_table_headers(self):
         """
         Resize table headers and body cells using JavaScript.
-        Installs a MutationObserver to ensure resize persists after dynamic updates.
+        Features:
+        - Persistent MutationObserver to handle app re-renders.
+        - Support for manual resizing by detecting user interaction.
+        - "Learns" new widths when user resizes manually.
         """
         try:
             script = """
-                const columnConfig = {
-                    'select': '50px',
-                    'activeTime': '250px',
-                    'Alternate Language': '750px',
-                    'priority': '100px'
-                };
+                // 1. Initialize Configuration (Persistent across re-runs)
+                if (!window.iaColumnConfig) {
+                    window.iaColumnConfig = {
+                        'select': '50px',
+                        'activeTime': '250px',
+                        'Alternate Language': '750px',
+                        'priority': '100px'
+                    };
+                }
+                
+                // Flag to track if user is currently resizing
+                if (typeof window.iaIsResizing === 'undefined') {
+                    window.iaIsResizing = false;
+                }
 
+                // 2. Event Listeners for Manual Resizing
+                // We use global listeners with delegation to handle dynamic elements
+                if (!window.iaResizeHandlersAttached) {
+                    document.addEventListener('mousedown', function(e) {
+                        if (e.target && e.target.classList.contains('thc-resize-handle')) {
+                            window.iaIsResizing = true;
+                            // console.log("User started resizing");
+                        }
+                    }, true);
+
+                    document.addEventListener('mouseup', function(e) {
+                        if (window.iaIsResizing) {
+                            window.iaIsResizing = false;
+                            // console.log("User finished resizing");
+                            // Force a sync to lock in the new values
+                            applyColumnStyles();
+                        }
+                    }, true);
+                    window.iaResizeHandlersAttached = true;
+                }
+
+                // 3. Main Logic: Apply or Learn Styles
                 function applyColumnStyles() {
                     const cells = document.querySelectorAll('.ia_table__cell');
                     let count = 0;
+
+                    // A. If User IS Resizing: LEARN new widths from DOM
+                    if (window.iaIsResizing) {
+                        cells.forEach(cell => {
+                            // Only look at headers to get the 'truth'
+                            if (cell.classList.contains('ia_table__head__header__cell')) {
+                                const colId = cell.getAttribute('data-column-id');
+                                const currentWidth = cell.style.width;
+                                
+                                // Update config if logic exists and we have a valid width
+                                if (colId && window.iaColumnConfig[colId] && currentWidth) {
+                                    window.iaColumnConfig[colId] = currentWidth;
+                                }
+                            }
+                        });
+                        return 0; // Don't enforce styles while dragging
+                    }
+
+                    // B. If User NOT Resizing: ENFORCE widths from Config
                     cells.forEach(cell => {
                         const colId = cell.getAttribute('data-column-id');
-                        if (colId && columnConfig[colId]) {
-                            const width = columnConfig[colId];
-                            // Only apply if needed to avoid redundant style recalculations
-                            if (cell.style.width !== width) {
-                                cell.style.setProperty('width', width, 'important');
-                                cell.style.setProperty('min-width', width, 'important');
-                                cell.style.setProperty('max-width', width, 'important');
-                                cell.style.setProperty('flex', '0 0 ' + width, 'important');
+                        if (colId && window.iaColumnConfig[colId]) {
+                            const desiredWidth = window.iaColumnConfig[colId];
+                            
+                            // Check if enforcement is needed (avoid expensive DOM writes)
+                            // We use !important to prevent the app from reverting styles randomly
+                            if (cell.style.width !== desiredWidth) {
+                                cell.style.setProperty('width', desiredWidth, 'important');
+                                cell.style.setProperty('min-width', desiredWidth, 'important');
+                                cell.style.setProperty('max-width', desiredWidth, 'important');
+                                cell.style.setProperty('flex', '0 0 ' + desiredWidth, 'important');
                                 cell.style.setProperty('box-sizing', 'border-box', 'important');
                                 cell.style.setProperty('overflow', 'hidden', 'important');
                                 count++;
@@ -80,26 +134,27 @@ class Page1Handler(BasePageHandler):
                     return count;
                 }
 
-                // Apply immediately
+                // 4. Run immediately
                 const initialCount = applyColumnStyles();
 
-                // Setup persistent observer to handle React/dynamic updates
+                // 5. Setup Observer to persist styles
                 if (!window.iaTableResizeObserver) {
                     window.iaTableResizeObserver = new MutationObserver((mutations) => {
                         applyColumnStyles();
                     });
                     
-                    // Observe the document body to catch any table re-renders
                     window.iaTableResizeObserver.observe(document.body, { 
                         childList: true, 
-                        subtree: true 
+                        subtree: true,
+                        attributes: true, // Watch for style changes too
+                        attributeFilter: ['style', 'class'] 
                     });
                 }
                 
                 return initialCount;
             """
             count = self.driver_manager.driver.execute_script(script)
-            logger.info(f"Resized {count} table cells and installed persistent observer.")
+            logger.info(f"Initialized smart table resizing setup.")
         except Exception as e:
             logger.warning(f"Could not resize table headers: {e}")
 
